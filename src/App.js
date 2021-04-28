@@ -1,23 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { TaskBanner } from "./components/Actividad1/TaskBanner";
+import { TaskRow } from "./components/Actividad1/TaskRow";
+import { TaskCreator } from "./components/Actividad1/TaskCreator";
 
 function App() {
+  const [taskItems, setTaskItems] = useState([  ]);
+
+  const createNewTask = taskName => {
+    if (!taskItems.find(t => t.name === taskName)) {
+      setTaskItems([...taskItems, { name: taskName, done: false }]);
+    }
+  };
+
+
+  const toggleTask = task =>
+    setTaskItems(
+      taskItems.map(t => (t.name === task.name ? { ...t, done: !t.done } : t))
+    );
+
+  const taskTableRows = doneValue =>
+    taskItems
+      .filter(task => task.done === doneValue)
+      .map(task => (
+        <TaskRow key={task.name} task={task} toggleTask={toggleTask} />
+      ));
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <TaskBanner taskItems={taskItems} />
+      <div className="container-fluid">
+        <TaskCreator callback={createNewTask} />
+        <table className="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>{taskTableRows(false)}</tbody>
+        </table>
+      </div>
     </div>
   );
 }
